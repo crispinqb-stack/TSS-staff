@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Staff</title>
+</head>
+<body>
+
+<h2>Staff </h2>
+
+<input type="email" id="email" placeholder="Correo"><br><br>
+<input type="password" id="password" placeholder="Contraseña"><br><br>
+
+<button onclick="login()">Entrar</button>
+
+<p id="mensaje"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
+  authDomain: "tss-members.firebaseapp.com",
+  projectId: "tss-members",
+  storageBucket: "tss-members.firebasestorage.app",
+  messagingSenderId: "472380736056",
+  appId: "1:472380736056:web:a9c72354561c9803881ccd"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.login = function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      window.location.href = "miembros.html";
+    })
+   .catch((error) => {
+  document.getElementById("mensaje").innerText = error.message;
+});
+}
+</script>
+
+</body>
+</html>
