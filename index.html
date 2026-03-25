@@ -1,76 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Staff Login</title>
-
-  <style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #351c75, #5f2c82);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-
-  .container {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    color: white;
-    width: 300px;
-  }
-
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: none;
-  }
-
-  button {
-    margin-top: 15px;
-    padding: 12px;
-    width: 100%;
-    border: none;
-    border-radius: 10px;
-    background: white;
-    color: #351c75;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #f0f0f0;
-  }
-
-  #mensaje {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #ffdddd;
-  }
-  </style>
+  <title>Login</title>
 </head>
 
 <body>
 
-<div class="container">
-
 <h2>STAFF PANEL</h2>
 
-<input type="email" id="email" placeholder="Correo">
-<input type="password" id="password" placeholder="Contraseña">
+<input type="email" id="email" placeholder="Correo"><br>
+<input type="password" id="password" placeholder="Contraseña"><br>
 
 <button onclick="login()">Entrar</button>
 
 <p id="mensaje"></p>
-
-</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -80,11 +23,7 @@ import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.0.0
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
   authDomain: "tss-members.firebaseapp.com",
-  databaseURL: "https://tss-members-default-rtdb.firebaseio.com",
-  projectId: "tss-members",
-  storageBucket: "tss-members.firebasestorage.app",
-  messagingSenderId: "472380736056",
-  appId: "1:472380736056:web:a9c72354561c9803881ccd"
+  databaseURL: "https://tss-members-default-rtdb.firebaseio.com"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -99,12 +38,22 @@ window.login = function() {
     .then((userCredential) => {
       const user = userCredential.user;
 
-      // 💾 GUARDAR USUARIO EN DATABASE
+      console.log("LOGIN OK", user.email);
+
+      // 🔥 FORZAR GUARDADO
       set(ref(db, 'usuarios/' + user.uid), {
         email: user.email
+      })
+      .then(() => {
+        console.log("GUARDADO OK");
+        alert("Usuario guardado 🔥");
+        window.location.href = "miembros.html";
+      })
+      .catch((error) => {
+        console.error("ERROR GUARDANDO:", error);
+        alert("Error guardando ❌");
       });
 
-      window.location.href = "miembros.html";
     })
     .catch((error) => {
       document.getElementById("mensaje").innerText = error.message;
