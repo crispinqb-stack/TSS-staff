@@ -1,19 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Secreto</title>
+  <title>Contenido secreto</title>
+
+  <style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #351c75;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    background: white;
+    color: #351c75;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #351c75;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #2a155c;
+  }
+  </style>
+
 </head>
+
 <body>
 
-<h1>Contenido secreto 🔐</h1>
+<div class="container">
 
-<p>Aquí va el TOP SHIPS DRAFT, ships que no estan en la pagina oficial 😎</p>
+<h1>Contenido secreto </h1>
 
-<p>Esto esta en beta, se ira actualizando conforme a la convivencia del salon </p>
+<p>Aquí va informacion secreta que solo el staff puede saber </p>
+
+<p>En este momento esta en beta, pero se seguira actualizando </p>
+
+<button onclick="logout()">Cerrar sesión</button>
+
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -27,16 +72,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 🔒 PROTECCIÓN CORRECTA
+// 🔒 Protección
 onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // usuario sí está logueado → deja pasar
-    console.log("Usuario permitido 😎");
-  } else {
-    // no logueado → manda al login
+  if (!user) {
     window.location.href = "index.html";
   }
 });
+
+// 🚪 Logout
+window.logout = function() {
+  signOut(auth).then(() => {
+    window.location.href = "index.html";
+  });
+}
 </script>
 
 </body>
