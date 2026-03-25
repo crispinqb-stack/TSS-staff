@@ -72,7 +72,7 @@
 
 <div class="container">
 
-<h2>STAFF LOGIN</h2>
+<h2>STAFF LOGIN </h2>
 
 <input type="email" id="email" placeholder="Correo">
 <input type="password" id="password" placeholder="Contraseña">
@@ -98,6 +98,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase();
 
+// 🔐 LOGIN
 window.login = function() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -106,9 +107,10 @@ window.login = function() {
     .then((userCredential) => {
       const user = userCredential.user;
 
-      // 💾 guardar usuario
+      // 💾 GUARDAR USUARIO + FECHA
       set(ref(db, 'usuarios/' + user.uid), {
-        email: user.email
+        email: user.email,
+        fecha: Date.now()
       });
 
       window.location.href = "miembros.html";
