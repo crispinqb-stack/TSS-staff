@@ -14,6 +14,7 @@
 
   h1 {
     text-align: center;
+    animation: fadeIn 1s ease;
   }
 
   .container {
@@ -31,10 +32,11 @@
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     transition: 0.3s;
+    animation: fadeUp 0.6s ease;
   }
 
   .card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px) scale(1.03);
   }
 
   .email {
@@ -65,6 +67,11 @@
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
   }
 
   /* 💀 POPUP */
@@ -75,9 +82,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     justify-content: center;
     align-items: center;
+    animation: fadeIn 0.3s ease;
   }
 
   #popup .box {
@@ -86,25 +94,37 @@
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    animation: zoomIn 0.3s ease;
   }
 
   /* ✅ MENSAJE */
   #mensajeBox {
     display: none;
     position: fixed;
-    bottom: 20px;
+    bottom: -100px;
     right: 20px;
     background: #00c853;
     color: white;
     padding: 15px 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: 0.4s;
+  }
+
+  /* 🔥 ANIMACIONES */
+  @keyframes fadeIn {
+    from {opacity:0;}
+    to {opacity:1;}
+  }
+
+  @keyframes fadeUp {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+  }
+
+  @keyframes zoomIn {
+    from {transform: scale(0.8);}
+    to {transform: scale(1);}
   }
   </style>
 </head>
@@ -146,7 +166,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// 👑 ROLES
 const admin = "crispin.qb@gmail.com";
 const partners = ["supra080213@gmail.com"];
 const workers = ["juandipa@gmail.com"];
@@ -155,7 +174,6 @@ const lista = document.getElementById("lista");
 
 let usuarioAEliminar = null;
 
-// 🔐 SOLO ADMIN
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
@@ -163,7 +181,7 @@ onAuthStateChanged(auth, (user) => {
     const email = user.email.trim().toLowerCase();
 
     if (email !== admin.toLowerCase()) {
-      alert("No tienes acceso ❌");
+      alert("No tienes acceso ");
       window.location.href = "miembros.html";
     } else {
       cargarUsuarios();
@@ -171,7 +189,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 📊 CARGAR USUARIOS
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     lista.innerHTML = "";
@@ -185,20 +202,11 @@ function cargarUsuarios() {
 
       let rol = "Usuario 👤";
 
-      if (email === admin.toLowerCase()) {
-        rol = "Admin 👑";
-      }
-      else if (partners.includes(email)) {
-        rol = "Partner 🤝";
-      }
-      else if (workers.includes(email)) {
-        rol = "Worker 🛠️";
-      }
+      if (email === admin.toLowerCase()) rol = "Admin 👑";
+      else if (partners.includes(email)) rol = "Partner 🤝";
+      else if (workers.includes(email)) rol = "Worker 🛠️";
 
-      let fecha = "Sin fecha";
-      if (data.fecha) {
-        fecha = new Date(data.fecha).toLocaleString();
-      }
+      let fecha = data.fecha ? new Date(data.fecha).toLocaleString() : "Sin fecha";
 
       const card = document.createElement("div");
       card.className = "card";
@@ -216,7 +224,6 @@ function cargarUsuarios() {
   });
 }
 
-// 💀 POPUP
 window.mostrarPopup = function(uid) {
   usuarioAEliminar = uid;
   document.getElementById("popup").style.display = "flex";
@@ -226,20 +233,19 @@ window.cerrarPopup = function() {
   document.getElementById("popup").style.display = "none";
 }
 
-// 🗑️ ELIMINAR + MENSAJE
 window.confirmarEliminar = function() {
   remove(ref(db, 'usuarios/' + usuarioAEliminar));
   cerrarPopup();
   mostrarMensaje();
 }
 
-// ✅ MENSAJE
 function mostrarMensaje() {
   const box = document.getElementById("mensajeBox");
   box.style.display = "block";
+  box.style.bottom = "20px";
 
   setTimeout(() => {
-    box.style.display = "none";
+    box.style.bottom = "-100px";
   }, 2000);
 }
 </script>
