@@ -22,20 +22,26 @@
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 300px;
   }
 
   button {
     margin-top: 10px;
-    padding: 10px 20px;
+    padding: 10px;
     border: none;
     border-radius: 10px;
     background: #351c75;
     color: white;
     cursor: pointer;
+    width: 100%;
   }
 
   button:hover {
     background: #2a155c;
+  }
+
+  #adminPanel button {
+    margin-top: 10px;
   }
   </style>
 
@@ -47,18 +53,32 @@
 
 <h1 id="saludo">Cargando...</h1>
 
-<p>BIENVENIDO AL STAFF PANEL</p>
+<p>Solo el staff puede ver esta informacion</p>
 
-<button onclick="window.location.href='respuestas.html'">
+<button onclick="window.location.href='information.html'">
 Ver contenido secreto 
 </button>
 
 <button onclick="logout()">Cerrar sesión</button>
 
-<!-- 🔐 PANEL ADMIN -->
+<!-- 👑 PANEL ADMIN -->
 <div id="adminPanel" style="display:none; margin-top:20px;">
-  <h3>Admin Panel </h3>
-  <p> Solo los Admins pueden ver esto </p>
+
+  <h3>Panel Admin 👑</h3>
+  <p>Solo los Admins pueden ver esto</p>
+
+  <button onclick="alert('Crear contenido 🚀')">
+    ➕ Crear contenido
+  </button>
+
+  <button onclick="alert('Ver usuarios 👥')">
+    👥 Ver usuarios
+  </button>
+
+  <button onclick="alert('Configuración ⚙️')">
+    ⚙️ Configuración
+  </button>
+
 </div>
 
 </div>
@@ -87,13 +107,16 @@ onAuthStateChanged(auth, (user) => {
 
     const admin = "crispin.qb@gmail.com";
 
-if (email.trim().toLowerCase() === admin.toLowerCase()) {
-  document.getElementById("saludo").innerText = "Admin 👑 " + nombre;
-  document.getElementById("adminPanel").style.display = "block";
-} else {
-  document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
-}
-    
+    let nombre = email.split("@")[0];
+    nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+
+    if (email.trim().toLowerCase() === admin.toLowerCase()) {
+      document.getElementById("saludo").innerText = "Admin 👑 " + nombre;
+      document.getElementById("adminPanel").style.display = "block";
+    } else {
+      document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
+    }
+  }
 });
 
 // logout
