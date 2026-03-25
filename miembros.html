@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Staff</title>
+  <title>STAFF</title>
 
   <style>
   body {
@@ -34,6 +34,10 @@
     width: 100%;
     cursor: pointer;
   }
+
+  button:hover {
+    background: #2a155c;
+  }
   </style>
 </head>
 
@@ -43,7 +47,7 @@
 
 <h1 id="saludo">Cargando...</h1>
 
-<p>Bienvenido al STAFF PANEL</p>
+<p>Solo los que son admins pueden ver esto</p>
 
 <button onclick="window.location.href='information.html'">
 Ver contenido secreto 
@@ -52,7 +56,7 @@ Ver contenido secreto
 <button onclick="logout()">Cerrar sesión</button>
 
 <div id="adminPanel" style="display:none; margin-top:20px;">
-  <h3>Admin Panel</h3>
+  <h3>Panel Admin </h3>
 
   <button onclick="alert('Crear contenido 🚀')">➕ Crear contenido</button>
   <button onclick="alert('Ver usuarios 👥')">👥 Ver usuarios</button>
@@ -91,7 +95,7 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
 
     if (email.trim().toLowerCase() === admin.toLowerCase()) {
-      document.getElementById("saludo").innerText = "Admin 👑 " + nombre;
+      document.getElementById("saludo").innerText = "Admin  " + nombre;
       document.getElementById("adminPanel").style.display = "block";
     }
   }
@@ -101,6 +105,11 @@ window.logout = function() {
   signOut(auth).then(() => {
     window.location.href = "index.html";
   });
+}
+</script>
+
+</body>
+</html>
 }
 </script>
 
