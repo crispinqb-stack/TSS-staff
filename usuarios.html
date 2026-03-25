@@ -60,13 +60,38 @@
   }
 
   button {
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 10px;
     border: none;
     border-radius: 10px;
+    cursor: pointer;
+  }
+
+  /* 🔥 POPUP */
+  #popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  #popup .box {
     background: white;
     color: #351c75;
-    cursor: pointer;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
   }
   </style>
 </head>
@@ -80,6 +105,15 @@
 <center>
 <button onclick="window.location.href='miembros.html'">⬅ Volver</button>
 </center>
+
+<!-- 💀 POPUP -->
+<div id="popup">
+  <div class="box">
+    <p>¿Eliminar usuario? 💀</p>
+    <button onclick="confirmarEliminar()">Sí, eliminar</button>
+    <button onclick="cerrarPopup()">Cancelar</button>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -96,12 +130,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// 👇 ROLES
+// 👑 ROLES
 const admin = "crispin.qb@gmail.com";
 const partners = ["supra080213@gmail.com"];
 const workers = ["juandipa@gmail.com"];
 
 const lista = document.getElementById("lista");
+
+let usuarioAEliminar = null;
 
 // 🔐 SOLO ADMIN
 onAuthStateChanged(auth, (user) => {
@@ -119,7 +155,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 📊 CARGAR USUARIOS
+// 📊 CARGAR
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     lista.innerHTML = "";
@@ -143,7 +179,6 @@ function cargarUsuarios() {
         rol = "Worker 🛠️";
       }
 
-      // 📅 FECHA
       let fecha = "Sin fecha";
       if (data.fecha) {
         fecha = new Date(data.fecha).toLocaleString();
@@ -157,7 +192,7 @@ function cargarUsuarios() {
         <p class="email">${email}</p>
         <p class="role">${rol}</p>
         <p class="date">${fecha}</p>
-        <button class="delete" onclick="eliminar('${uid}')">Eliminar 🗑️</button>
+        <button class="delete" onclick="mostrarPopup('${uid}')">Eliminar 🗑️</button>
       `;
 
       lista.appendChild(card);
@@ -165,11 +200,19 @@ function cargarUsuarios() {
   });
 }
 
-// 🗑️ ELIMINAR USUARIO
-window.eliminar = function(uid) {
-  if (confirm("¿Eliminar usuario? 💀")) {
-    remove(ref(db, 'usuarios/' + uid));
-  }
+// 🔥 POPUP FUNCIONES
+window.mostrarPopup = function(uid) {
+  usuarioAEliminar = uid;
+  document.getElementById("popup").style.display = "flex";
+}
+
+window.cerrarPopup = function() {
+  document.getElementById("popup").style.display = "none";
+}
+
+window.confirmarEliminar = function() {
+  remove(ref(db, 'usuarios/' + usuarioAEliminar));
+  cerrarPopup();
 }
 </script>
 
