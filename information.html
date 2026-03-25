@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secreto</title>
+</head>
+<body>
+
+<h1>Contenido secreto </h1>
+<p>Esto es de prueba y todo se oficializara despues 😎</p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC0...",
+  authDomain: "tss-members.firebaseapp.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  }
+});
+</script>
+
+</body>
+</html>
