@@ -5,23 +5,32 @@
 </head>
 <body>
 
-<h1>Contenido secreto </h1>
-<p>Esto es de prueba y todo se oficializara despues 😎</p>
+<h1>Contenido secreto 🔐</h1>
+<p>Aqui habra informacion secreta que se actualizara despues 😎</p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC0...",
-  authDomain: "tss-members.firebaseapp.com"
+  apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
+  authDomain: "tss-members.firebaseapp.com",
+  projectId: "tss-members",
+  storageBucket: "tss-members.firebasestorage.app",
+  messagingSenderId: "472380736056",
+  appId: "1:472380736056:web:a9c72354561c9803881ccd"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// 🔒 PROTECCIÓN CORRECTA
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
+  if (user) {
+    // usuario sí está logueado → deja pasar
+    console.log("Usuario permitido 😎");
+  } else {
+    // no logueado → manda al login
     window.location.href = "index.html";
   }
 });
