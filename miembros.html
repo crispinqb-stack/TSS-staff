@@ -91,9 +91,9 @@ onAuthStateChanged(auth, (user) => {
 
     let rol = "Usuario 👤";
 
-    if (email === admin) rol = "Admin 👑";
-    else if (partners.includes(email)) rol = "Partner 🤝";
-    else if (workers.includes(email)) rol = "Worker 🛠️";
+    if (email === admin) rol = "Admin ";
+    else if (partners.includes(email)) rol = "Partner ";
+    else if (workers.includes(email)) rol = "Worker ";
 
     document.getElementById("saludo").innerText =
       rol + " - " + nombre;
