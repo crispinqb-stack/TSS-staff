@@ -22,9 +22,7 @@
     width: 350px;
   }
 
-  h1 {
-    color: #351c75;
-  }
+  h1 { color: #351c75; }
 
   button {
     width: 100%;
@@ -38,13 +36,7 @@
     cursor: pointer;
   }
 
-  button:hover {
-    opacity: 0.9;
-  }
-
-  #adminPanel {
-    margin-top: 20px;
-  }
+  #adminPanel { margin-top: 20px; }
   </style>
 </head>
 
@@ -55,18 +47,20 @@
 <h1 id="saludo">Cargando...</h1>
 <p>Bienvenido al STAFF PANEL</p>
 
-<button onclick="window.location.href='contenido.html'">Ver contenido secreto 🔒</button>
+<button onclick="window.location.href='information.html'">
+🔐 Contenido secreto
+</button>
+
+<button onclick="window.location.href='posts.html'">
+📝 Ver posts
+</button>
+
 <button onclick="logout()">Cerrar sesión</button>
 
-<!-- 📝 NUEVO BOTÓN -->
-<button onclick="window.location.href='posts.html'">Ver posts 📝</button>
-
 <div id="adminPanel" style="display:none;">
-  <h3>Panel Admin</h3>
+  <h3>Admin Panel</h3>
 
-  <button onclick="alert('Crear contenido 🚀')">➕ Crear contenido</button>
   <button onclick="window.location.href='usuarios.html'">👥 Ver usuarios</button>
-  <button onclick="alert('Configuración ⚙️')">⚙️ Configuración</button>
 </div>
 
 </div>
@@ -83,18 +77,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// 👑 ROLES
 const admin = "crispin.qb@gmail.com";
+const partners = ["supra080213@gmail.com"];
+const workers = ["juandipa@gmail.com"];
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   } else {
-    const email = user.email;
+    const email = user.email.toLowerCase();
     const nombre = email.split("@")[0];
 
-    document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
+    let rol = "Usuario 👤";
 
-    if (email.toLowerCase() === admin.toLowerCase()) {
+    if (email === admin) rol = "Admin 👑";
+    else if (partners.includes(email)) rol = "Partner 🤝";
+    else if (workers.includes(email)) rol = "Worker 🛠️";
+
+    document.getElementById("saludo").innerText =
+      rol + " - " + nombre;
+
+    // 👑 solo admin ve panel
+    if (email === admin) {
       document.getElementById("adminPanel").style.display = "block";
     }
   }
