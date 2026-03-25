@@ -40,4 +40,176 @@
     margin-top: 10px;
     max-width: 70%;
     align-self: flex-start;
-    color:
+    background: gray;
+    color: white;
+  }
+
+  .admin {
+    background: #351c75;
+  }
+
+  .inputBox {
+    display: flex;
+    padding: 10px;
+    background: white;
+  }
+
+  input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+  }
+
+  button {
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #351c75;
+    color: white;
+    cursor: pointer;
+  }
+  </style>
+</head>
+
+<body>
+
+<div id="users"></div>
+
+<div id="chat">
+  <div id="messages"></div>
+
+  <div class="inputBox">
+    <input id="msgInput" placeholder="Mensaje...">
+    <button onclick="enviar()">Enviar</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+// 🔥 CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
+  authDomain: "tss-members.firebaseapp.com",
+  databaseURL: "https://tss-members-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// 👑 ROLES
+const admin = "crispin.qb@gmail.com";
+const partners = ["supra080213@gmail.com"];
+const workers = ["juandipa@gmail.com"];
+
+let currentUser = null;
+let chatActual = null;
+let isAdmin = false;
+
+// 🔐 LOGIN
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  currentUser = user;
+  const email = user.email.toLowerCase();
+
+  if (email === admin) {
+    isAdmin = true;
+    cargarUsuarios();
+  } else {
+    chatActual = user.uid;
+    cargarMensajes(user.uid);
+  }
+});
+
+// 👥 LISTA (ADMIN)
+function cargarUsuarios() {
+  onValue(ref(db, 'usuarios'), (snapshot) => {
+    const usersDiv = document.getElementById("users");
+    usersDiv.innerHTML = "<h3>Usuarios</h3>";
+
+    let primero = true;
+
+    snapshot.forEach((child) => {
+      const data = child.val();
+      const uid = child.key;
+
+      const div = document.createElement("div");
+      div.innerText = data.email;
+      div.style.cursor = "pointer";
+      div.style.marginTop = "10px";
+
+      div.onclick = () => {
+        chatActual = uid;
+        cargarMensajes(uid);
+      };
+
+      usersDiv.appendChild(div);
+
+      // 👇 AUTO CARGA PRIMER CHAT
+      if (primero) {
+        chatActual = uid;
+        cargarMensajes(uid);
+        primero = false;
+      }
+    });
+  });
+}
+
+// 💬 MENSAJES
+function cargarMensajes(uid) {
+  onValue(ref(db, 'chat/' + uid), (snapshot) => {
+    const container = document.getElementById("messages");
+    container.innerHTML = "";
+
+    snapshot.forEach((child) => {
+      const data = child.val();
+
+      const div = document.createElement("div");
+      div.className = "msg";
+
+      // 🎨 COLOR POR ROL
+      const email = data.usuario.toLowerCase();
+
+      if (email === admin) {
+        div.classList.add("admin");
+      }
+
+      div.innerHTML = `
+        <b>${data.usuario}</b><br>
+        ${data.texto}
+      `;
+
+      container.appendChild(div);
+    });
+
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+// 📤 ENVIAR
+window.enviar = function() {
+  const texto = document.getElementById("msgInput").value;
+
+  if (!texto || !chatActual) return;
+
+  push(ref(db, 'chat/' + chatActual), {
+    usuario: currentUser.email,
+    texto: texto,
+    fecha: Date.now()
+  });
+
+  document.getElementById("msgInput").value = "";
+};
+</script>
+
+</body>
+</html>
