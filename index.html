@@ -2,16 +2,86 @@
 <html>
 <head>
   <title>Login</title>
+
+  <style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #351c75, #5f2c82);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    color: white;
+    width: 300px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+  }
+
+  input:focus {
+    box-shadow: 0 0 10px white;
+  }
+
+  button {
+    margin-top: 15px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: #351c75;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    background: #f0f0f0;
+  }
+
+  #mensaje {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #ffdddd;
+  }
+  </style>
 </head>
 
 <body>
 
-<h2>STAFF PANEL</h2>
+<div class="container">
 
-<input type="email" id="email" placeholder="Correo"><br>
-<input type="password" id="password" placeholder="Contraseña"><br>
+<h2>STAFF LOGIN</h2>
+
+<input type="email" id="email" placeholder="Correo">
+<input type="password" id="password" placeholder="Contraseña">
 
 <button onclick="login()">Entrar</button>
+
+<p id="mensaje"></p>
+
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -26,7 +96,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getDatabase(); // 🔥 IMPORTANTE
+const db = getDatabase();
 
 window.login = function() {
   const email = document.getElementById("email").value;
@@ -36,22 +106,15 @@ window.login = function() {
     .then((userCredential) => {
       const user = userCredential.user;
 
-      console.log("LOGIN OK");
-
+      // 💾 guardar usuario
       set(ref(db, 'usuarios/' + user.uid), {
         email: user.email
-      })
-      .then(() => {
-        alert("GUARDADO EN DATABASE 🔥");
-        window.location.href = "miembros.html";
-      })
-      .catch((error) => {
-        alert("ERROR AL GUARDAR: " + error.message);
       });
 
+      window.location.href = "miembros.html";
     })
     .catch((error) => {
-      alert("ERROR LOGIN: " + error.message);
+      document.getElementById("mensaje").innerText = error.message;
     });
 }
 </script>
