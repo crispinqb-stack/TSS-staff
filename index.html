@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title> Staff Login</title>
+  <title> SATFF LOGIN </title>
 
   <style>
   body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #351c75;
-    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #351c75, #5f2c82);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,36 +15,68 @@
   }
 
   .container {
-    background: white;
-    color: #351c75;
+    background: rgba(255, 255, 255, 0.1);
     padding: 40px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    color: white;
+    width: 300px;
+    animation: fadeIn 0.8s ease;
+  }
+
+  h2 {
+    margin-bottom: 20px;
   }
 
   input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
     border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 16px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+  }
+
+  input:focus {
+    box-shadow: 0 0 10px #ffffff;
   }
 
   button {
     margin-top: 15px;
-    padding: 10px 20px;
+    padding: 12px;
+    width: 100%;
     border: none;
     border-radius: 10px;
-    background: #351c75;
-    color: white;
-    font-size: 16px;
+    background: white;
+    color: #351c75;
+    font-weight: bold;
     cursor: pointer;
+    transition: 0.3s;
   }
 
   button:hover {
-    background: #2a155c;
+    transform: scale(1.05);
+    background: #f0f0f0;
+  }
+
+  #mensaje {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #ffdddd;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   </style>
 
@@ -55,10 +86,10 @@
 
 <div class="container">
 
-<h2>STAFF</h2>
+<h2>Bienvenido al STAFF PANEL </h2>
 
-<input type="email" id="email" placeholder="Correo"><br>
-<input type="password" id="password" placeholder="Contraseña"><br>
+<input type="email" id="email" placeholder="Correo">
+<input type="password" id="password" placeholder="Contraseña">
 
 <button onclick="login()">Entrar</button>
 
