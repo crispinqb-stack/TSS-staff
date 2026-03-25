@@ -67,7 +67,7 @@
     cursor: pointer;
   }
 
-  /* 🔥 POPUP */
+  /* 💀 POPUP */
   #popup {
     display: none;
     position: fixed;
@@ -93,6 +93,19 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
   }
+
+  /* ✅ MENSAJE */
+  #mensajeBox {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #00c853;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
   </style>
 </head>
 
@@ -114,6 +127,9 @@
     <button onclick="cerrarPopup()">Cancelar</button>
   </div>
 </div>
+
+<!-- ✅ MENSAJE -->
+<div id="mensajeBox">Usuario eliminado ✅</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -155,7 +171,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 📊 CARGAR
+// 📊 CARGAR USUARIOS
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     lista.innerHTML = "";
@@ -200,7 +216,7 @@ function cargarUsuarios() {
   });
 }
 
-// 🔥 POPUP FUNCIONES
+// 💀 POPUP
 window.mostrarPopup = function(uid) {
   usuarioAEliminar = uid;
   document.getElementById("popup").style.display = "flex";
@@ -210,9 +226,21 @@ window.cerrarPopup = function() {
   document.getElementById("popup").style.display = "none";
 }
 
+// 🗑️ ELIMINAR + MENSAJE
 window.confirmarEliminar = function() {
   remove(ref(db, 'usuarios/' + usuarioAEliminar));
   cerrarPopup();
+  mostrarMensaje();
+}
+
+// ✅ MENSAJE
+function mostrarMensaje() {
+  const box = document.getElementById("mensajeBox");
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 2000);
 }
 </script>
 
