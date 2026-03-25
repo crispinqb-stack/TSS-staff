@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Miembros</title>
+  <title>Contenido secreto</title>
 
   <style>
   body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: Arial;
     background: #351c75;
     display: flex;
     justify-content: center;
@@ -14,60 +14,42 @@
     height: 100vh;
   }
 
-  .container {
-    background: #f0f0f0;
+  .box {
+    background: white;
+    color: #351c75;
     padding: 40px;
-    border-radius: 25px;
+    border-radius: 20px;
     text-align: center;
-    width: 350px;
   }
-
-  h1 { color: #351c75; }
 
   button {
-    width: 100%;
-    padding: 12px;
     margin-top: 10px;
+    padding: 10px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #351c75;
     color: white;
-    font-size: 16px;
     cursor: pointer;
   }
-
-  #adminPanel { margin-top: 20px; }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
-<h1 id="saludo">Cargando...</h1>
-<p>Bienvenido al STAFF PANEL</p>
+<h1>Contenido secreto </h1>
 
-<button onclick="window.location.href='information.html'">
-🔐 Contenido secreto
-</button>
-
-<button onclick="window.location.href='posts.html'">
-📝 Ver posts
-</button>
-
-<button onclick="logout()">Cerrar sesión</button>
-
-<div id="adminPanel" style="display:none;">
-  <h3>Admin Panel</h3>
-
-  <button onclick="window.location.href='usuarios.html'">👥 Ver usuarios</button>
-</div>
+<p>Solo el staff puede ver esto </p>
+<p>Se actualizara proximamente </p>
+  
+<button onclick="window.location.href='miembros.html'">⬅ Volver</button>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -77,38 +59,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 👑 ROLES
-const admin = "crispin.qb@gmail.com";
-const partners = ["supra080213@gmail.com"];
-const workers = ["juandipa@gmail.com"];
-
+// 🔐 PROTECCIÓN
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
-  } else {
-    const email = user.email.toLowerCase();
-    const nombre = email.split("@")[0];
-
-    let rol = "Usuario 👤";
-
-    if (email === admin) rol = "Admin 👑";
-    else if (partners.includes(email)) rol = "Partner 🤝";
-    else if (workers.includes(email)) rol = "Worker 🛠️";
-
-    document.getElementById("saludo").innerText =
-      rol + " - " + nombre;
-
-    // 👑 solo admin ve panel
-    if (email === admin) {
-      document.getElementById("adminPanel").style.display = "block";
-    }
   }
 });
-
-window.logout = function() {
-  signOut(auth);
-  window.location.href = "index.html";
-}
 </script>
 
 </body>
