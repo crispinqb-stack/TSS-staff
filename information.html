@@ -8,7 +8,6 @@
     margin: 0;
     font-family: Arial, sans-serif;
     background: #351c75;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,25 +20,20 @@
     padding: 40px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 300px;
   }
 
   button {
-    margin-top: 15px;
-    padding: 10px 20px;
+    margin-top: 10px;
+    padding: 10px;
     border: none;
     border-radius: 10px;
     background: #351c75;
     color: white;
-    font-size: 16px;
+    width: 100%;
     cursor: pointer;
   }
-
-  button:hover {
-    background: #2a155c;
-  }
   </style>
-
 </head>
 
 <body>
@@ -48,10 +42,10 @@
 
 <h1>Contenido secreto </h1>
 
-<p>Aquí va informacion secreta que solo el staff puede saber </p>
+<p>Aquí va informacion que solo el staff puede saber </p>
+<p> Se seguira actualizando proximamente. </p>
 
-<p>En este momento esta en beta, pero se seguira actualizando </p>
-
+<button onclick="window.location.href='miembros.html'">⬅ Volver</button>
 <button onclick="logout()">Cerrar sesión</button>
 
 </div>
@@ -63,23 +57,17 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
   authDomain: "tss-members.firebaseapp.com",
-  projectId: "tss-members",
-  storageBucket: "tss-members.firebasestorage.app",
-  messagingSenderId: "472380736056",
-  appId: "1:472380736056:web:a9c72354561c9803881ccd"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 🔒 Protección
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   }
 });
 
-// 🚪 Logout
 window.logout = function() {
   signOut(auth).then(() => {
     window.location.href = "index.html";
