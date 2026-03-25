@@ -47,10 +47,6 @@
     font-weight: bold;
   }
 
-  .admin {
-    color: purple;
-  }
-
   button {
     margin-top: 20px;
     padding: 10px;
@@ -75,6 +71,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -84,39 +81,69 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
+
+// 👇 DEFINE TUS ROLES
+const admin = "crispin.qb@gmail.com";
+const partners = ["supra080213@gmail.com"];
+const workers = ["Juandipa@gmail.com"];
 
 const lista = document.getElementById("lista");
 
-// 👇 TU CORREO ADMIN
-const admin = "crispin.qb@gmail.com";
+// 🔐 PROTECCIÓN (solo admin entra)
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    const email = user.email;
 
-onValue(ref(db, 'usuarios'), (snapshot) => {
-  lista.innerHTML = "";
-
-  snapshot.forEach((child) => {
-    const data = child.val();
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const nombre = data.email.split("@")[0];
-
-    let rol = "Usuario 👤";
-
-    if (data.email.trim().toLowerCase() === admin.toLowerCase()) {
-      rol = "Admin 👑";
+    if (email.trim().toLowerCase() !== admin.toLowerCase()) {
+      alert("No tienes acceso ❌");
+      window.location.href = "miembros.html";
+    } else {
+      cargarUsuarios();
     }
-
-    card.innerHTML = `
-      <h3>${nombre}</h3>
-      <p class="email">${data.email}</p>
-      <p class="role">${rol}</p>
-    `;
-
-    lista.appendChild(card);
-  });
+  }
 });
+
+// 📊 CARGAR USUARIOS
+function cargarUsuarios() {
+  onValue(ref(db, 'usuarios'), (snapshot) => {
+    lista.innerHTML = "";
+
+    snapshot.forEach((child) => {
+      const data = child.val();
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const nombre = data.email.split("@")[0];
+
+      let rol = "Usuario 👤";
+
+      const email = data.email.trim().toLowerCase();
+
+      if (email === admin.toLowerCase()) {
+        rol = "Admin 👑";
+      }
+      else if (partners.includes(email)) {
+        rol = "Partner 🤝";
+      }
+      else if (workers.includes(email)) {
+        rol = "Worker 🛠️";
+      }
+
+      card.innerHTML = `
+        <h3>${nombre}</h3>
+        <p class="email">${data.email}</p>
+        <p class="role">${rol}</p>
+      `;
+
+      lista.appendChild(card);
+    });
+  });
+}
 </script>
 
 </body>
