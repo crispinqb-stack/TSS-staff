@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>STAFF</title>
+  <title>Miembros</title>
 
   <style>
   body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background: #351c75;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,27 +15,35 @@
   }
 
   .container {
-    background: white;
-    color: #351c75;
+    background: #f0f0f0;
     padding: 40px;
-    border-radius: 20px;
+    border-radius: 25px;
     text-align: center;
-    width: 300px;
+    width: 350px;
+  }
+
+  h1 {
+    color: #351c75;
   }
 
   button {
+    width: 100%;
+    padding: 12px;
     margin-top: 10px;
-    padding: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #351c75;
     color: white;
-    width: 100%;
+    font-size: 16px;
     cursor: pointer;
   }
 
   button:hover {
-    background: #2a155c;
+    opacity: 0.9;
+  }
+
+  #adminPanel {
+    margin-top: 20px;
   }
   </style>
 </head>
@@ -46,29 +53,20 @@
 <div class="container">
 
 <h1 id="saludo">Cargando...</h1>
-
 <p>Bienvenido al STAFF PANEL</p>
 
-<button onclick="window.location.href='information.html'">
-Ver contenido secreto 
-</button>
-
+<button onclick="window.location.href='contenido.html'">Ver contenido secreto 🔒</button>
 <button onclick="logout()">Cerrar sesión</button>
 
-<div id="adminPanel" style="display:none; margin-top:20px;">
-  <h3>Panel Admin </h3>
+<!-- 📝 NUEVO BOTÓN -->
+<button onclick="window.location.href='posts.html'">Ver posts 📝</button>
 
- <button onclick="window.location.href='crear.html'">
-➕ Crear contenido
-</button>
+<div id="adminPanel" style="display:none;">
+  <h3>Panel Admin</h3>
 
-<button onclick="window.location.href='usuarios.html'">
-👥 Ver usuarios
-</button>
-
-<button onclick="window.location.href='config.html'">
-⚙️ Configuración
-</button>
+  <button onclick="alert('Crear contenido 🚀')">➕ Crear contenido</button>
+  <button onclick="window.location.href='usuarios.html'">👥 Ver usuarios</button>
+  <button onclick="alert('Configuración ⚙️')">⚙️ Configuración</button>
 </div>
 
 </div>
@@ -79,45 +77,32 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
-  authDomain: "tss-members.firebaseapp.com",
-  projectId: "tss-members",
-  storageBucket: "tss-members.firebasestorage.app",
-  messagingSenderId: "472380736056",
-  appId: "1:472380736056:web:a9c72354561c9803881ccd"
+  authDomain: "tss-members.firebaseapp.com"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+const admin = "crispin.qb@gmail.com";
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   } else {
     const email = user.email;
-
-    const admin = "crispin.qb@gmail.com";
-
-    let nombre = email.split("@")[0];
-    nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    const nombre = email.split("@")[0];
 
     document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
 
-    if (email.trim().toLowerCase() === admin.toLowerCase()) {
-      document.getElementById("saludo").innerText = "Admin  " + nombre;
+    if (email.toLowerCase() === admin.toLowerCase()) {
       document.getElementById("adminPanel").style.display = "block";
     }
   }
 });
 
 window.logout = function() {
-  signOut(auth).then(() => {
-    window.location.href = "index.html";
-  });
-}
-</script>
-
-</body>
-</html>
+  signOut(auth);
+  window.location.href = "index.html";
 }
 </script>
 
