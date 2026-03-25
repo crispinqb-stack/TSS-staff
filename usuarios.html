@@ -84,21 +84,21 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// 👇 DEFINE TUS ROLES
+// 👇 DEFINE TUS ROLES (TODO EN MINÚSCULAS)
 const admin = "crispin.qb@gmail.com";
 const partners = ["supra080213@gmail.com"];
 const workers = ["juandipa@gmail.com"];
 
 const lista = document.getElementById("lista");
 
-// 🔐 PROTECCIÓN (solo admin entra)
+// 🔐 SOLO ADMIN PUEDE ENTRAR
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   } else {
-    const email = user.email;
+    const email = user.email.trim().toLowerCase();
 
-    if (email.trim().toLowerCase() !== admin.toLowerCase()) {
+    if (email !== admin.toLowerCase()) {
       alert("No tienes acceso ❌");
       window.location.href = "miembros.html";
     } else {
@@ -118,11 +118,10 @@ function cargarUsuarios() {
       const card = document.createElement("div");
       card.className = "card";
 
-      const nombre = data.email.split("@")[0];
+      const email = data.email.trim().toLowerCase();
+      const nombre = email.split("@")[0];
 
       let rol = "Usuario 👤";
-
-      const email = data.email.trim().toLowerCase();
 
       if (email === admin.toLowerCase()) {
         rol = "Admin 👑";
@@ -136,7 +135,7 @@ function cargarUsuarios() {
 
       card.innerHTML = `
         <h3>${nombre}</h3>
-        <p class="email">${data.email}</p>
+        <p class="email">${email}</p>
         <p class="role">${rol}</p>
       `;
 
