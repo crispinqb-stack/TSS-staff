@@ -47,6 +47,10 @@
     font-weight: bold;
   }
 
+  .admin {
+    color: purple;
+  }
+
   button {
     margin-top: 20px;
     padding: 10px;
@@ -84,6 +88,9 @@ const db = getDatabase(app);
 
 const lista = document.getElementById("lista");
 
+// 👇 TU CORREO ADMIN
+const admin = "crispin.qb@gmail.com";
+
 onValue(ref(db, 'usuarios'), (snapshot) => {
   lista.innerHTML = "";
 
@@ -95,10 +102,16 @@ onValue(ref(db, 'usuarios'), (snapshot) => {
 
     const nombre = data.email.split("@")[0];
 
+    let rol = "Usuario 👤";
+
+    if (data.email.trim().toLowerCase() === admin.toLowerCase()) {
+      rol = "Admin 👑";
+    }
+
     card.innerHTML = `
       <h3>${nombre}</h3>
       <p class="email">${data.email}</p>
-      <p class="role">Usuario 👤</p>
+      <p class="role">${rol}</p>
     `;
 
     lista.appendChild(card);
