@@ -1,49 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>POSTS</title>
+  <title>Posts</title>
 
   <style>
   body {
-    font-family: Arial;
+    font-family: 'Segoe UI';
     background: #351c75;
     color: white;
     padding: 20px;
   }
 
-  .box {
-    background: white;
-    color: #351c75;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
-  }
+  h1 { text-align: center; }
 
-  textarea {
+  textarea, input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
+    border: none;
+    margin-top: 10px;
   }
 
   button {
     margin-top: 10px;
     padding: 10px;
-    border: none;
     border-radius: 10px;
+    border: none;
     background: white;
     color: #351c75;
     cursor: pointer;
+  }
+
+  .post {
+    background: white;
+    color: #351c75;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 15px;
+  }
+
+  img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .small {
+    font-size: 12px;
+    opacity: 0.7;
   }
   </style>
 </head>
 
 <body>
 
-<h1>POSTS </h1>
+<h1>Posts 📝</h1>
 
-<div id="adminPost" style="display:none;">
+<!-- 👑 SOLO ADMIN -->
+<div id="adminBox" style="display:none;">
   <textarea id="texto" placeholder="Escribe algo..."></textarea>
-  <button onclick="publicar()">Publicar</button>
+  <input id="imagen" placeholder="URL de imagen (opcional)">
+  <button onclick="publicar()">Publicar </button>
 </div>
 
 <div id="feed"></div>
@@ -51,7 +68,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -65,50 +82,93 @@ const db = getDatabase(app);
 
 const admin = "crispin.qb@gmail.com";
 
+let isAdmin = false;
+
 // 🔐 detectar usuario
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   } else {
-    const email = user.email.toLowerCase();
-
-    if (email === admin.toLowerCase()) {
-      document.getElementById("adminPost").style.display = "block";
+    if (user.email.toLowerCase() === admin.toLowerCase()) {
+      isAdmin = true;
+      document.getElementById("adminBox").style.display = "block";
     }
   }
 });
 
-// 📝 publicar
+// 📝 PUBLICAR (SOLO ADMIN)
 window.publicar = function() {
+  if (!isAdmin) return alert("No autorizado ❌");
+
   const texto = document.getElementById("texto").value;
+  const imagen = document.getElementById("imagen").value;
 
   push(ref(db, 'posts'), {
-    texto: texto,
+    texto,
+    imagen,
+    usuario: admin,
     fecha: Date.now()
   });
 
   document.getElementById("texto").value = "";
+  document.getElementById("imagen").value = "";
 }
 
-// 📊 mostrar posts
+// 📊 MOSTRAR POSTS
 onValue(ref(db, 'posts'), (snapshot) => {
   const feed = document.getElementById("feed");
   feed.innerHTML = "";
 
   snapshot.forEach((child) => {
     const data = child.val();
+    const id = child.key;
 
     const div = document.createElement("div");
-    div.className = "box";
+    div.className = "post";
+
+    let botones = "";
+
+    // 👑 SOLO ADMIN VE BOTONES
+    if (isAdmin) {
+      botones = `
+        <button onclick="eliminar('${id}')">🗑️ Eliminar</button>
+        <button onclick="editar('${id}', \`${data.texto}\`)">✏️ Editar</button>
+      `;
+    }
 
     div.innerHTML = `
+      <p><b>${data.usuario}</b></p>
       <p>${data.texto}</p>
-      <small>${new Date(data.fecha).toLocaleString()}</small>
+      ${data.imagen ? `<img src="${data.imagen}">` : ""}
+      <p class="small">${new Date(data.fecha).toLocaleString()}</p>
+      ${botones}
     `;
 
     feed.prepend(div);
   });
 });
+
+// 🗑️ ELIMINAR (SOLO ADMIN)
+window.eliminar = function(id) {
+  if (!isAdmin) return alert("No autorizado ❌");
+
+  if (confirm("Eliminar post ")) {
+    remove(ref(db, 'posts/' + id));
+  }
+}
+
+// ✏️ EDITAR (SOLO ADMIN)
+window.editar = function(id, textoViejo) {
+  if (!isAdmin) return alert("No autorizado ❌");
+
+  const nuevo = prompt("Editar post:", textoViejo);
+
+  if (nuevo) {
+    update(ref(db, 'posts/' + id), {
+      texto: nuevo
+    });
+  }
+}
 </script>
 
 </body>
