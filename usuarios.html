@@ -47,6 +47,18 @@
     font-weight: bold;
   }
 
+  .date {
+    font-size: 12px;
+    margin-top: 5px;
+    opacity: 0.7;
+  }
+
+  .delete {
+    margin-top: 10px;
+    background: red;
+    color: white;
+  }
+
   button {
     margin-top: 20px;
     padding: 10px;
@@ -72,7 +84,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -84,14 +96,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// 👇 DEFINE TUS ROLES (TODO EN MINÚSCULAS)
+// 👇 ROLES
 const admin = "crispin.qb@gmail.com";
 const partners = ["supra080213@gmail.com"];
 const workers = ["juandipa@gmail.com"];
 
 const lista = document.getElementById("lista");
 
-// 🔐 SOLO ADMIN PUEDE ENTRAR
+// 🔐 SOLO ADMIN
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
@@ -114,9 +126,7 @@ function cargarUsuarios() {
 
     snapshot.forEach((child) => {
       const data = child.val();
-
-      const card = document.createElement("div");
-      card.className = "card";
+      const uid = child.key;
 
       const email = data.email.trim().toLowerCase();
       const nombre = email.split("@")[0];
@@ -133,15 +143,33 @@ function cargarUsuarios() {
         rol = "Worker 🛠️";
       }
 
+      // 📅 FECHA
+      let fecha = "Sin fecha";
+      if (data.fecha) {
+        fecha = new Date(data.fecha).toLocaleString();
+      }
+
+      const card = document.createElement("div");
+      card.className = "card";
+
       card.innerHTML = `
         <h3>${nombre}</h3>
         <p class="email">${email}</p>
         <p class="role">${rol}</p>
+        <p class="date">${fecha}</p>
+        <button class="delete" onclick="eliminar('${uid}')">Eliminar 🗑️</button>
       `;
 
       lista.appendChild(card);
     });
   });
+}
+
+// 🗑️ ELIMINAR USUARIO
+window.eliminar = function(uid) {
+  if (confirm("¿Eliminar usuario? 💀")) {
+    remove(ref(db, 'usuarios/' + uid));
+  }
 }
 </script>
 
