@@ -1,11 +1,110 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Usuarios</title>
+
+  <style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #351c75;
+    color: white;
+    padding: 20px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .card {
+    background: white;
+    color: #351c75;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: 0.3s;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+  }
+
+  .email {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .role {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: #351c75;
+    cursor: pointer;
+  }
+  </style>
+</head>
+
 <body>
 
-<h1>Usuarios </h1>
-<p>Aquí verás usuarios </p>
+<h1>Usuarios 👥</h1>
 
-<a href="miembros.html">⬅ Volver</a>
+<div class="container" id="lista"></div>
+
+<center>
+<button onclick="window.location.href='miembros.html'">⬅ Volver</button>
+</center>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
+  authDomain: "tss-members.firebaseapp.com",
+  databaseURL: "https://tss-members-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const lista = document.getElementById("lista");
+
+onValue(ref(db, 'usuarios'), (snapshot) => {
+  lista.innerHTML = "";
+
+  snapshot.forEach((child) => {
+    const data = child.val();
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const nombre = data.email.split("@")[0];
+
+    card.innerHTML = `
+      <h3>${nombre}</h3>
+      <p class="email">${data.email}</p>
+      <p class="role">Usuario 👤</p>
+    `;
+
+    lista.appendChild(card);
+  });
+});
+</script>
 
 </body>
 </html>
