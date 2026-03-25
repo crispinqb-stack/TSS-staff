@@ -6,7 +6,7 @@
 
 <body>
 
-<h2>Login 🔐</h2>
+<h2>STAFF PANEL</h2>
 
 <input type="email" id="email" placeholder="Correo"><br>
 <input type="password" id="password" placeholder="Contraseña"><br>
@@ -26,7 +26,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getDatabase(app);
+const db = getDatabase(); // 🔥 IMPORTANTE
 
 window.login = function() {
   const email = document.getElementById("email").value;
@@ -36,7 +36,8 @@ window.login = function() {
     .then((userCredential) => {
       const user = userCredential.user;
 
-      // 🔥 FORZAR GUARDADO
+      console.log("LOGIN OK");
+
       set(ref(db, 'usuarios/' + user.uid), {
         email: user.email
       })
@@ -45,12 +46,12 @@ window.login = function() {
         window.location.href = "miembros.html";
       })
       .catch((error) => {
-        alert("ERROR: " + error.message);
+        alert("ERROR AL GUARDAR: " + error.message);
       });
 
     })
     .catch((error) => {
-      alert("LOGIN ERROR: " + error.message);
+      alert("ERROR LOGIN: " + error.message);
     });
 }
 </script>
