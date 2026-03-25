@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title> SATFF LOGIN </title>
+  <title>Staff Login</title>
 
   <style>
   body {
@@ -23,11 +23,6 @@
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     color: white;
     width: 300px;
-    animation: fadeIn 0.8s ease;
-  }
-
-  h2 {
-    margin-bottom: 20px;
   }
 
   input {
@@ -36,12 +31,6 @@
     margin-top: 10px;
     border-radius: 10px;
     border: none;
-    outline: none;
-    font-size: 14px;
-  }
-
-  input:focus {
-    box-shadow: 0 0 10px #ffffff;
   }
 
   button {
@@ -54,11 +43,9 @@
     color: #351c75;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
   }
 
   button:hover {
-    transform: scale(1.05);
     background: #f0f0f0;
   }
 
@@ -67,26 +54,14 @@
     font-size: 12px;
     color: #ffdddd;
   }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
   </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>STAFF PANEL </h2>
+<h2>Bienvenido al STAFF PANEL</h2>
 
 <input type="email" id="email" placeholder="Correo">
 <input type="password" id="password" placeholder="Contraseña">
@@ -100,10 +75,12 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
   authDomain: "tss-members.firebaseapp.com",
+  databaseURL: "https://tss-members-default-rtdb.firebaseio.com",
   projectId: "tss-members",
   storageBucket: "tss-members.firebasestorage.app",
   messagingSenderId: "472380736056",
@@ -112,18 +89,31 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
 window.login = function() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
   signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      // 💾 GUARDAR USUARIO EN DATABASE
+      set(ref(db, 'usuarios/' + user.uid), {
+        email: user.email
+      });
+
       window.location.href = "miembros.html";
     })
     .catch((error) => {
       document.getElementById("mensaje").innerText = error.message;
     });
+}
+</script>
+
+</body>
+</html>
 }
 </script>
 
