@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Miembros</title>
+  <title>STAFF PANEL</title>
 
   <style>
   body {
@@ -25,13 +25,12 @@
   }
 
   button {
-    margin-top: 20px;
+    margin-top: 10px;
     padding: 10px 20px;
     border: none;
     border-radius: 10px;
     background: #351c75;
     color: white;
-    font-size: 16px;
     cursor: pointer;
   }
 
@@ -48,13 +47,19 @@
 
 <h1 id="saludo">Cargando...</h1>
 
-<p>Bienvenido al STAFF PANEL</p>
+<p>BIENVENIDO AL STAFF PANEL</p>
 
-<button onclick="window.location.href='./information.html'">
-Ver contenido secreto 🔐
+<button onclick="window.location.href='respuestas.html'">
+Ver contenido secreto 
 </button>
 
-<button onclick="logout()">Cerrar sesión</button></button>
+<button onclick="logout()">Cerrar sesión</button>
+
+<!-- 🔐 PANEL ADMIN -->
+<div id="adminPanel" style="display:none; margin-top:20px;">
+  <h3>Admin Panel </h3>
+  <p> Solo los Admins pueden ver esto </p>
+</div>
 
 </div>
 
@@ -74,21 +79,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 🔒 Protección + saludo
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
   } else {
     const email = user.email;
 
+    const admin = "crispin.qb@gmail.com";
+
     let nombre = email.split("@")[0];
     nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
 
-    document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
+    if (email === admin) {
+      document.getElementById("saludo").innerText = "Admin  " + nombre;
+      document.getElementById("adminPanel").style.display = "block";
+    } else {
+      document.getElementById("saludo").innerText = "Hola, " + nombre + " 👋";
+    }
   }
 });
 
-// 🚪 Logout
+// logout
 window.logout = function() {
   signOut(auth).then(() => {
     window.location.href = "index.html";
