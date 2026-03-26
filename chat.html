@@ -52,11 +52,17 @@
     flex-direction: column;
   }
 
-  /* 👇 NOMBRE */
   #chatWith {
     background: rgba(255,255,255,0.2);
     padding: 10px;
     text-align: center;
+  }
+
+  #typing {
+    font-size: 12px;
+    padding-left: 10px;
+    height: 18px;
+    opacity: 0.8;
   }
 
   #messages {
@@ -72,9 +78,7 @@
     border-radius: 15px;
     margin-top: 10px;
     max-width: 70%;
-    align-self: flex-start;
     background: gray;
-    color: white;
   }
 
   .admin {
@@ -125,10 +129,7 @@
 <body>
 
 <div class="topBar">
-  <button class="volver" onclick="window.location.href='miembros.html'">
-    ⬅ Volver
-  </button>
-
+  <button class="volver" onclick="window.location.href='miembros.html'">⬅ Volver</button>
   <h2>Chat 💬</h2>
 </div>
 
@@ -138,6 +139,7 @@
 
   <div id="chat">
     <div id="chatWith">Selecciona un usuario 💀</div>
+    <div id="typing"></div>
 
     <div id="messages"></div>
 
@@ -152,7 +154,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -163,8 +165,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-
-const admin = "crispin.qb@gmail.com";
 
 let currentUser = null;
 let chatActual = null;
@@ -198,15 +198,12 @@ function cargarUsuarios() {
       div.onclick = () => {
         chatActual = generarChatID(currentUser.uid, uid);
         cargarMensajes(chatActual);
+        escucharTyping(chatActual);
 
-        // 🔥 TEXTO ARRIBA
         document.getElementById("chatWith").innerText =
           "Chateando con: " + data.email;
 
-        if (selectedDiv) {
-          selectedDiv.classList.remove("selected");
-        }
-
+        if (selectedDiv) selectedDiv.classList.remove("selected");
         div.classList.add("selected");
         selectedDiv = div;
       };
@@ -231,10 +228,6 @@ function cargarMensajes(chatID) {
       const div = document.createElement("div");
       div.className = "msg";
 
-      if (data.usuario.toLowerCase() === admin) {
-        div.classList.add("admin");
-      }
-
       div.innerHTML = `
         <b>${data.usuario}</b><br>
         ${data.texto}
@@ -247,6 +240,33 @@ function cargarMensajes(chatID) {
   });
 }
 
+// 🔥 ESCRIBIENDO
+document.getElementById("msgInput").addEventListener("input", () => {
+  if (!chatActual) return;
+
+  set(ref(db, 'typing/' + chatActual + '/' + currentUser.uid), true);
+
+  setTimeout(() => {
+    set(ref(db, 'typing/' + chatActual + '/' + currentUser.uid), false);
+  }, 1500);
+});
+
+function escucharTyping(chatID) {
+  onValue(ref(db, 'typing/' + chatID), (snapshot) => {
+    let escribiendo = false;
+
+    snapshot.forEach((child) => {
+      if (child.key !== currentUser.uid && child.val() === true) {
+        escribiendo = true;
+      }
+    });
+
+    document.getElementById("typing").innerText =
+      escribiendo ? "Escribiendo..." : "";
+  });
+}
+
+// 📤 ENVIAR
 window.enviar = function() {
   const texto = document.getElementById("msgInput").value;
 
