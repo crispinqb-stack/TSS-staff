@@ -10,7 +10,35 @@
     background: #351c75;
     color: white;
     display: flex;
+    flex-direction: column;
     height: 100vh;
+  }
+
+  /* 🔝 TOP BAR */
+  .topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .volver {
+    background: white;
+    color: #351c75;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  h2 {
+    margin: 0 auto;
+  }
+
+  /* CONTENEDOR PRINCIPAL */
+  .main {
+    display: flex;
+    flex: 1;
   }
 
   #users {
@@ -39,6 +67,7 @@
     border-radius: 15px;
     margin-top: 10px;
     max-width: 70%;
+    align-self: flex-start;
     background: gray;
     color: white;
   }
@@ -74,21 +103,34 @@
 
 <body>
 
-<div id="users"></div>
+<!-- 🔝 BARRA SUPERIOR -->
+<div class="topBar">
+  <button class="volver" onclick="window.location.href='miembros.html'">
+    ⬅ Volver
+  </button>
 
-<div id="chat">
-  <div id="messages"></div>
+  <h2>Chat 💬</h2>
+</div>
 
-  <div class="inputBox">
-    <input id="msgInput" placeholder="Mensaje...">
-    <button onclick="enviar()">Enviar</button>
+<div class="main">
+
+  <div id="users"></div>
+
+  <div id="chat">
+    <div id="messages"></div>
+
+    <div class="inputBox">
+      <input id="msgInput" placeholder="Mensaje...">
+      <button onclick="enviar()">Enviar</button>
+    </div>
   </div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -116,7 +158,7 @@ onAuthStateChanged(auth, (user) => {
   cargarUsuarios();
 });
 
-// 👥 LISTA DE USUARIOS (TODOS)
+// 👥 USUARIOS
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     const usersDiv = document.getElementById("users");
@@ -126,7 +168,6 @@ function cargarUsuarios() {
       const data = child.val();
       const uid = child.key;
 
-      // ❌ no mostrarse a sí mismo
       if (uid === currentUser.uid) return;
 
       const div = document.createElement("div");
@@ -144,7 +185,7 @@ function cargarUsuarios() {
   });
 }
 
-// 🔑 GENERAR CHAT PRIVADO (IMPORTANTE)
+// 🔑 CHAT ID
 function generarChatID(uid1, uid2) {
   return uid1 < uid2 ? uid1 + "_" + uid2 : uid2 + "_" + uid1;
 }
