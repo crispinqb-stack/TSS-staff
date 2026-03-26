@@ -30,14 +30,9 @@
     cursor: pointer;
   }
 
-  h2 {
-    margin: 0 auto;
-  }
+  h2 { margin: 0 auto; }
 
-  .main {
-    display: flex;
-    flex: 1;
-  }
+  .main { display: flex; flex: 1; }
 
   #users {
     width: 30%;
@@ -62,7 +57,6 @@
     font-size: 12px;
     padding-left: 10px;
     height: 18px;
-    opacity: 0.8;
   }
 
   #messages {
@@ -81,8 +75,12 @@
     background: gray;
   }
 
-  .admin {
-    background: #351c75;
+  .admin { background: #351c75; }
+
+  .status {
+    font-size: 11px;
+    margin-top: 5px;
+    opacity: 0.7;
   }
 
   .user {
@@ -92,9 +90,7 @@
     cursor: pointer;
   }
 
-  .user:hover {
-    background: rgba(255,255,255,0.2);
-  }
+  .user:hover { background: rgba(255,255,255,0.2); }
 
   .selected {
     background: white;
@@ -154,7 +150,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -224,45 +220,32 @@ function cargarMensajes(chatID) {
 
     snapshot.forEach((child) => {
       const data = child.val();
+      const key = child.key;
 
       const div = document.createElement("div");
       div.className = "msg";
 
+      // ✔✔ marcar visto si no es tuyo
+      if (data.usuario !== currentUser.email && !data.visto) {
+        update(ref(db, 'chats/' + chatID + '/' + key), {
+          visto: true
+        });
+      }
+
+      let estado = "✔";
+
+      if (data.visto) estado = "✔✔";
+
       div.innerHTML = `
         <b>${data.usuario}</b><br>
         ${data.texto}
+        <div class="status">${estado}</div>
       `;
 
       container.appendChild(div);
     });
 
     container.scrollTop = container.scrollHeight;
-  });
-}
-
-// 🔥 ESCRIBIENDO
-document.getElementById("msgInput").addEventListener("input", () => {
-  if (!chatActual) return;
-
-  set(ref(db, 'typing/' + chatActual + '/' + currentUser.uid), true);
-
-  setTimeout(() => {
-    set(ref(db, 'typing/' + chatActual + '/' + currentUser.uid), false);
-  }, 1500);
-});
-
-function escucharTyping(chatID) {
-  onValue(ref(db, 'typing/' + chatID), (snapshot) => {
-    let escribiendo = false;
-
-    snapshot.forEach((child) => {
-      if (child.key !== currentUser.uid && child.val() === true) {
-        escribiendo = true;
-      }
-    });
-
-    document.getElementById("typing").innerText =
-      escribiendo ? "Escribiendo..." : "";
   });
 }
 
@@ -278,7 +261,8 @@ window.enviar = function() {
   push(ref(db, 'chats/' + chatActual), {
     usuario: currentUser.email,
     texto: texto,
-    fecha: Date.now()
+    fecha: Date.now(),
+    visto: false
   });
 
   document.getElementById("msgInput").value = "";
