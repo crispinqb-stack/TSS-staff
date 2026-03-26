@@ -14,7 +14,6 @@
     height: 100vh;
   }
 
-  /* 🔝 TOP BAR */
   .topBar {
     display: flex;
     align-items: center;
@@ -35,7 +34,6 @@
     margin: 0 auto;
   }
 
-  /* MAIN */
   .main {
     display: flex;
     flex: 1;
@@ -54,6 +52,13 @@
     flex-direction: column;
   }
 
+  /* 👇 NOMBRE */
+  #chatWith {
+    background: rgba(255,255,255,0.2);
+    padding: 10px;
+    text-align: center;
+  }
+
   #messages {
     flex: 1;
     overflow-y: auto;
@@ -62,7 +67,6 @@
     flex-direction: column;
   }
 
-  /* 💬 MENSAJES */
   .msg {
     padding: 10px;
     border-radius: 15px;
@@ -77,7 +81,6 @@
     background: #351c75;
   }
 
-  /* 👥 USERS */
   .user {
     padding: 8px;
     border-radius: 10px;
@@ -94,7 +97,6 @@
     color: #351c75;
   }
 
-  /* INPUT */
   .inputBox {
     display: flex;
     padding: 10px;
@@ -122,7 +124,6 @@
 
 <body>
 
-<!-- 🔝 TOP -->
 <div class="topBar">
   <button class="volver" onclick="window.location.href='miembros.html'">
     ⬅ Volver
@@ -136,6 +137,8 @@
   <div id="users"></div>
 
   <div id="chat">
+    <div id="chatWith">Selecciona un usuario 💀</div>
+
     <div id="messages"></div>
 
     <div class="inputBox">
@@ -167,7 +170,6 @@ let currentUser = null;
 let chatActual = null;
 let selectedDiv = null;
 
-// 🔐 LOGIN
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
@@ -178,7 +180,6 @@ onAuthStateChanged(auth, (user) => {
   cargarUsuarios();
 });
 
-// 👥 USUARIOS
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     const usersDiv = document.getElementById("users");
@@ -198,7 +199,10 @@ function cargarUsuarios() {
         chatActual = generarChatID(currentUser.uid, uid);
         cargarMensajes(chatActual);
 
-        // 🔥 RESALTAR
+        // 🔥 TEXTO ARRIBA
+        document.getElementById("chatWith").innerText =
+          "Chateando con: " + data.email;
+
         if (selectedDiv) {
           selectedDiv.classList.remove("selected");
         }
@@ -212,12 +216,10 @@ function cargarUsuarios() {
   });
 }
 
-// 🔑 CHAT ID
 function generarChatID(uid1, uid2) {
   return uid1 < uid2 ? uid1 + "_" + uid2 : uid2 + "_" + uid1;
 }
 
-// 💬 MENSAJES
 function cargarMensajes(chatID) {
   onValue(ref(db, 'chats/' + chatID), (snapshot) => {
     const container = document.getElementById("messages");
@@ -245,7 +247,6 @@ function cargarMensajes(chatID) {
   });
 }
 
-// 📤 ENVIAR
 window.enviar = function() {
   const texto = document.getElementById("msgInput").value;
 
