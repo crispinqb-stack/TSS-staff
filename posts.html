@@ -11,7 +11,24 @@
     padding: 20px;
   }
 
-  h1 { text-align: center; }
+  h1 {
+    text-align: center;
+  }
+
+  .topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .volver {
+    background: white;
+    color: #351c75;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 
   textarea, input {
     width: 100%;
@@ -54,21 +71,28 @@
 
 <body>
 
-<h1>Posts 📝</h1>
+<!-- 🔝 BARRA SUPERIOR -->
+<div class="topBar">
+  <button class="volver" onclick="window.location.href='miembros.html'">
+    ⬅ Volver
+  </button>
+
+  <h1>Posts 📝</h1>
+</div>
 
 <!-- 👑 SOLO ADMIN -->
 <div id="adminBox" style="display:none;">
   <textarea id="texto" placeholder="Escribe algo..."></textarea>
   <input id="imagen" placeholder="URL de imagen (opcional)">
-  <button onclick="publicar()">Publicar </button>
+  <button onclick="publicar()">Publicar 🚀</button>
 </div>
 
 <div id="feed"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
@@ -96,7 +120,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 📝 PUBLICAR (SOLO ADMIN)
+// 📝 PUBLICAR
 window.publicar = function() {
   if (!isAdmin) return alert("No autorizado ❌");
 
@@ -128,7 +152,6 @@ onValue(ref(db, 'posts'), (snapshot) => {
 
     let botones = "";
 
-    // 👑 SOLO ADMIN VE BOTONES
     if (isAdmin) {
       botones = `
         <button onclick="eliminar('${id}')">🗑️ Eliminar</button>
@@ -148,18 +171,18 @@ onValue(ref(db, 'posts'), (snapshot) => {
   });
 });
 
-// 🗑️ ELIMINAR (SOLO ADMIN)
+// 🗑️ ELIMINAR
 window.eliminar = function(id) {
-  if (!isAdmin) return alert("No autorizado ❌");
+  if (!isAdmin) return;
 
-  if (confirm("Eliminar post ")) {
+  if (confirm("Eliminar post 💀")) {
     remove(ref(db, 'posts/' + id));
   }
 }
 
-// ✏️ EDITAR (SOLO ADMIN)
+// ✏️ EDITAR
 window.editar = function(id, textoViejo) {
-  if (!isAdmin) return alert("No autorizado ❌");
+  if (!isAdmin) return;
 
   const nuevo = prompt("Editar post:", textoViejo);
 
