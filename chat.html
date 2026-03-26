@@ -39,7 +39,6 @@
     border-radius: 15px;
     margin-top: 10px;
     max-width: 70%;
-    align-self: flex-start;
     background: gray;
     color: white;
   }
@@ -91,7 +90,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
-// 🔥 CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyC0yiuq9AQIjYysocDPJIoW4mktfUmMAeY",
   authDomain: "tss-members.firebaseapp.com",
@@ -102,14 +100,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// 👑 ROLES
 const admin = "crispin.qb@gmail.com";
-const partners = ["supra080213@gmail.com"];
-const workers = ["juandipa@gmail.com"];
 
 let currentUser = null;
 let chatActual = null;
-let isAdmin = false;
 
 // 🔐 LOGIN
 onAuthStateChanged(auth, (user) => {
@@ -119,28 +113,21 @@ onAuthStateChanged(auth, (user) => {
   }
 
   currentUser = user;
-  const email = user.email.toLowerCase();
-
-  if (email === admin) {
-    isAdmin = true;
-    cargarUsuarios();
-  } else {
-    chatActual = user.uid;
-    cargarMensajes(user.uid);
-  }
+  cargarUsuarios();
 });
 
-// 👥 LISTA (ADMIN)
+// 👥 LISTA DE USUARIOS (TODOS)
 function cargarUsuarios() {
   onValue(ref(db, 'usuarios'), (snapshot) => {
     const usersDiv = document.getElementById("users");
     usersDiv.innerHTML = "<h3>Usuarios</h3>";
 
-    let primero = true;
-
     snapshot.forEach((child) => {
       const data = child.val();
       const uid = child.key;
+
+      // ❌ no mostrarse a sí mismo
+      if (uid === currentUser.uid) return;
 
       const div = document.createElement("div");
       div.innerText = data.email;
@@ -148,25 +135,23 @@ function cargarUsuarios() {
       div.style.marginTop = "10px";
 
       div.onclick = () => {
-        chatActual = uid;
-        cargarMensajes(uid);
+        chatActual = generarChatID(currentUser.uid, uid);
+        cargarMensajes(chatActual);
       };
 
       usersDiv.appendChild(div);
-
-      // 👇 AUTO CARGA PRIMER CHAT
-      if (primero) {
-        chatActual = uid;
-        cargarMensajes(uid);
-        primero = false;
-      }
     });
   });
 }
 
+// 🔑 GENERAR CHAT PRIVADO (IMPORTANTE)
+function generarChatID(uid1, uid2) {
+  return uid1 < uid2 ? uid1 + "_" + uid2 : uid2 + "_" + uid1;
+}
+
 // 💬 MENSAJES
-function cargarMensajes(uid) {
-  onValue(ref(db, 'chat/' + uid), (snapshot) => {
+function cargarMensajes(chatID) {
+  onValue(ref(db, 'chats/' + chatID), (snapshot) => {
     const container = document.getElementById("messages");
     container.innerHTML = "";
 
@@ -176,10 +161,7 @@ function cargarMensajes(uid) {
       const div = document.createElement("div");
       div.className = "msg";
 
-      // 🎨 COLOR POR ROL
-      const email = data.usuario.toLowerCase();
-
-      if (email === admin) {
+      if (data.usuario === admin) {
         div.classList.add("admin");
       }
 
@@ -199,9 +181,12 @@ function cargarMensajes(uid) {
 window.enviar = function() {
   const texto = document.getElementById("msgInput").value;
 
-  if (!texto || !chatActual) return;
+  if (!texto || !chatActual) {
+    alert("Selecciona un usuario primero 💀");
+    return;
+  }
 
-  push(ref(db, 'chat/' + chatActual), {
+  push(ref(db, 'chats/' + chatActual), {
     usuario: currentUser.email,
     texto: texto,
     fecha: Date.now()
