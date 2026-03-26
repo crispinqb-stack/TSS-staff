@@ -35,7 +35,7 @@
     margin: 0 auto;
   }
 
-  /* CONTENEDOR PRINCIPAL */
+  /* MAIN */
   .main {
     display: flex;
     flex: 1;
@@ -62,6 +62,7 @@
     flex-direction: column;
   }
 
+  /* 💬 MENSAJES */
   .msg {
     padding: 10px;
     border-radius: 15px;
@@ -76,6 +77,24 @@
     background: #351c75;
   }
 
+  /* 👥 USERS */
+  .user {
+    padding: 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+  }
+
+  .user:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .selected {
+    background: white;
+    color: #351c75;
+  }
+
+  /* INPUT */
   .inputBox {
     display: flex;
     padding: 10px;
@@ -103,7 +122,7 @@
 
 <body>
 
-<!-- 🔝 BARRA SUPERIOR -->
+<!-- 🔝 TOP -->
 <div class="topBar">
   <button class="volver" onclick="window.location.href='miembros.html'">
     ⬅ Volver
@@ -146,6 +165,7 @@ const admin = "crispin.qb@gmail.com";
 
 let currentUser = null;
 let chatActual = null;
+let selectedDiv = null;
 
 // 🔐 LOGIN
 onAuthStateChanged(auth, (user) => {
@@ -172,12 +192,19 @@ function cargarUsuarios() {
 
       const div = document.createElement("div");
       div.innerText = data.email;
-      div.style.cursor = "pointer";
-      div.style.marginTop = "10px";
+      div.className = "user";
 
       div.onclick = () => {
         chatActual = generarChatID(currentUser.uid, uid);
         cargarMensajes(chatActual);
+
+        // 🔥 RESALTAR
+        if (selectedDiv) {
+          selectedDiv.classList.remove("selected");
+        }
+
+        div.classList.add("selected");
+        selectedDiv = div;
       };
 
       usersDiv.appendChild(div);
@@ -202,7 +229,7 @@ function cargarMensajes(chatID) {
       const div = document.createElement("div");
       div.className = "msg";
 
-      if (data.usuario === admin) {
+      if (data.usuario.toLowerCase() === admin) {
         div.classList.add("admin");
       }
 
